@@ -9,37 +9,37 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    
+    // MARK: - PROPERTIES
+    @State private var showingAddTodoView: Bool = false
+    
+    
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
         animation: .default)
     private var items: FetchedResults<Item>
+    
+    // MARK: - BODY
 
     var body: some View {
         NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
-                }
-                .onDelete(perform: deleteItems)
+            List(/*@START_MENU_TOKEN@*/0 ..< 5/*@END_MENU_TOKEN@*/) { item in
+                Text("Hello, World!")
+            } //: LIST
+            .navigationBarTitle("Todo", displayMode: .inline)
+            .navigationBarItems(trailing:
+                                    Button(action: {
+                self.showingAddTodoView.toggle()
+            }) {
+                Image(systemName: "plus")
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-            Text("Select an item")
-        }
+                .sheet(isPresented: $showingAddTodoView, content: {
+                    AddTodoView()
+                })
+            )
+        } //: NAVIGATION
     }
 
     private func addItem() {
