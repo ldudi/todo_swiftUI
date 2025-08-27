@@ -11,22 +11,26 @@ import CoreData
 struct ContentView: View {
     
     // MARK: - PROPERTIES
-    @State private var showingAddTodoView: Bool = false
-    
-    
     @Environment(\.managedObjectContext) private var manageObjectContext
 
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
+    @FetchRequest(entity: Todo.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Todo.name, ascending: true)]) var todos: FetchedResults<Todo>
+    
+    @State private var showingAddTodoView: Bool = false
     
     // MARK: - BODY
 
     var body: some View {
         NavigationView {
-            List(/*@START_MENU_TOKEN@*/0 ..< 5/*@END_MENU_TOKEN@*/) { item in
-                Text("Hello, World!")
+            List {
+                ForEach(todos, id: \.self) { todo in
+                    HStack {
+                        Text(todo.name ?? "Unknown")
+                        
+                        Spacer()
+                        
+                        Text("\(todo.priority ?? "unknown")")
+                    }
+                }
             } //: LIST
             .navigationBarTitle("Todo", displayMode: .inline)
             .navigationBarItems(trailing:
@@ -81,6 +85,12 @@ private let itemFormatter: DateFormatter = {
     return formatter
 }()
 
-#Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        let context = PersistenceController.preview.container.viewContext
+        return ContentView()
+            .environment(\.managedObjectContext, context)
+    }
 }
+
