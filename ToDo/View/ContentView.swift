@@ -30,11 +30,14 @@ struct ContentView: View {
                         
                         Text("\(todo.priority ?? "unknown")")
                     }
-                }
+                } //: FOREACH
+                .onDelete(perform: deleteTodo)
             } //: LIST
             .navigationBarTitle("Todo", displayMode: .inline)
-            .navigationBarItems(trailing:
-                                    Button(action: {
+            .navigationBarItems(
+                leading: EditButton(),
+                trailing:
+                Button(action: {
                 self.showingAddTodoView.toggle()
             }) {
                 Image(systemName: "plus")
@@ -75,6 +78,21 @@ struct ContentView: View {
 //                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
 //            }
 //        }
+    }
+    
+    //MARK: - Functions
+    
+    private func deleteTodo(at offsets: IndexSet) {
+        for index in offsets {
+            let todo = todos[index]
+            manageObjectContext.delete(todo)
+            
+            do {
+                try manageObjectContext.save()
+            } catch {
+                print(error)
+            }
+        }
     }
 }
 
