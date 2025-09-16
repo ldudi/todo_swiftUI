@@ -13,8 +13,6 @@ struct EmptyListView: View {
     
     @State private var isAnimating: Bool = false
     
-    // MARK: PROPERTIES
-    
     let images: [String] = [
         "illustration-no1",
         "illustration-no2",
