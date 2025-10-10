@@ -12,6 +12,7 @@ struct SettingsView: View {
     // MARK: - PROPERTIES
     
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var iconSettings: IconNames
     
     // MARK: - BODY
     var body: some View {
@@ -20,6 +21,66 @@ struct SettingsView: View {
                 // MARK: - FORM
                 
                 Form {
+                    // MARK: - SECTION 1
+                    
+                    Section(header: Text("Choose the app icon")) {
+                        Picker(selection: $iconSettings.currentIndex, label:
+                                HStack {
+                            
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .strokeBorder(Color.primary, lineWidth: 2)
+                                
+                                Image(systemName: "paintbrush")
+                                    .font(.system(size: 28, weight: .regular, design: .default))
+                                    .foregroundColor(.primary)
+                            }
+                            .frame(width: 44, height: 44)
+                            
+                            Text("App Icons".uppercased())
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                        }
+                        ) {
+                            ForEach(0..<iconSettings.iconNames.count, id: \.self) { index in
+                                HStack(spacing: 12) {
+                                    Image(iconSettings.iconNames[index] ?? "Blue")
+                                        .renderingMode(.original)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 44, height: 44)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .clipped()
+                                    Text(iconSettings.iconNames[index] ?? "Blue")
+                                        .lineLimit(1)
+                                        .truncationMode(.tail)
+                                    
+                                    Spacer()
+                                }
+                                .frame(height: 56)
+                                .contentShape(Rectangle())
+                                .tag(index)
+                            }//: LOOP
+                        }//: PICKER
+                        .onReceive([self.iconSettings.currentIndex].publisher.first()) { (value) in
+                            let index = self.iconSettings.iconNames.firstIndex(of: UIApplication.shared.alternateIconName) ?? 0
+                            if index != value {
+                                UIApplication.shared.setAlternateIconName(self.iconSettings.iconNames[value]) { error in
+                                    if let error = error {
+                                        print(error.localizedDescription)
+                                    } else {
+                                        print("Sucess! You have changed the app icons.")
+                                    }
+                                }
+                            }
+                            
+                        }
+                    }//: SECTION
+                    .padding(.vertical, 3)
+
+                    
+                    
+                    
                     // MARK: SECTION 3
                     
                     Section(header: Text("Follow us on social media")) {
@@ -67,5 +128,5 @@ struct SettingsView: View {
 // MARK: - Preview
 
 #Preview {
-    SettingsView()
+    SettingsView().environmentObject(IconNames())
 }
