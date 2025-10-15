@@ -14,6 +14,11 @@ struct SettingsView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var iconSettings: IconNames
     
+    // THEME
+    
+    let themes: [Theme] = themeData
+    @ObservedObject var theme = ThemeSettings()
+    
     // MARK: - BODY
     var body: some View {
         NavigationView {
@@ -78,7 +83,37 @@ struct SettingsView: View {
                     }//: SECTION
                     .padding(.vertical, 3)
 
+                    // MARK: - SECTION 2
                     
+                    Section(header:
+                                HStack {
+                        Text("Choose the app theme")
+                        Image(systemName: "circle.fill")
+                            .resizable()
+                            .frame(width: 10, height: 10)
+                            .foregroundColor(themes[self.theme.themeSettings].themeColor)
+                    }
+                    ) {
+                        List {
+                            ForEach(themes, id: \.id) { item in
+                                
+                                Button(action: {
+                                    self.theme.themeSettings = item.id
+                                    UserDefaults.standard.set(self.theme.themeSettings, forKey: "Theme")
+                                }) {
+                                    HStack {
+                                        Image(systemName: "circle.fill")
+                                            .foregroundColor(item.themeColor)
+                                        
+                                        Text(item.themeName)
+                                        
+                                    }
+                                } //: BUTTON
+                                .accentColor(Color.primary)
+                            }
+                        }
+                    } //: SECTION 2
+                    .padding(.vertical, 3)
                     
                     
                     // MARK: SECTION 3
