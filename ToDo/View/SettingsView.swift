@@ -18,6 +18,7 @@ struct SettingsView: View {
     
     let themes: [Theme] = themeData
     @ObservedObject var theme = ThemeSettings()
+    @State private var isThemeChanged: Bool = false
     
     // MARK: - BODY
     var body: some View {
@@ -100,6 +101,7 @@ struct SettingsView: View {
                                 Button(action: {
                                     self.theme.themeSettings = item.id
                                     UserDefaults.standard.set(self.theme.themeSettings, forKey: "Theme")
+                                    self.isThemeChanged.toggle()
                                 }) {
                                     HStack {
                                         Image(systemName: "circle.fill")
@@ -114,6 +116,9 @@ struct SettingsView: View {
                         }
                     } //: SECTION 2
                     .padding(.vertical, 3)
+                    .alert(isPresented: $isThemeChanged) {
+                        Alert(title: Text("SUCCESS!"), message: Text("App has been changed to the \(themes[self.theme.themeSettings].themeName). Now close and restart it!"), dismissButton: .default(Text("OK")))
+                    }
                     
                     
                     // MARK: SECTION 3
@@ -157,6 +162,8 @@ struct SettingsView: View {
             .navigationBarTitle("Settings", displayMode: .inline)
             .background(Color("ColorBackground")).edgesIgnoringSafeArea(.bottom)
         } //: NAVIGATION
+        .accentColor(themes[self.theme.themeSettings].themeColor)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
